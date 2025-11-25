@@ -1,4 +1,5 @@
 import 'package:a4tech_webui/providers/model_provider.dart';
+import 'package:a4tech_webui/providers/theme_provider.dart';
 import 'package:a4tech_webui/screens/note_editor_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:a4tech_webui/screens/chat_screen.dart';
@@ -32,50 +33,78 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('4Tech WebUI'),
-        bottom: Provider.of<ModelProvider>(context).isDownloading
-            ? PreferredSize(
-                preferredSize: const Size.fromHeight(24.0),
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Text(
-                    Provider.of<ModelProvider>(context).downloadStatus,
-                    style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return Container(
+          decoration: themeProvider.backgroundImage != null
+              ? BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(themeProvider.backgroundImage!),
+                    fit: BoxFit.cover,
                   ),
+                )
+              : null,
+          child: Scaffold(
+            backgroundColor: themeProvider.backgroundImage != null
+                ? Colors.transparent
+                : Theme.of(context).scaffoldBackgroundColor,
+            appBar: AppBar(
+              backgroundColor: themeProvider.backgroundImage != null
+                  ? Colors.transparent
+                  : Theme.of(context).appBarTheme.backgroundColor,
+              elevation: themeProvider.backgroundImage != null ? 0 : 4.0,
+              title: const Text('4Tech WebUI'),
+              bottom: Provider.of<ModelProvider>(context).isDownloading
+                  ? PreferredSize(
+                      preferredSize: const Size.fromHeight(24.0),
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          Provider.of<ModelProvider>(context).downloadStatus,
+                          style: TextStyle(
+                              color:
+                                  Theme.of(context).colorScheme.onPrimary),
+                        ),
+                      ),
+                    )
+                  : null,
+            ),
+            body: Center(
+              child: _widgetOptions.elementAt(_selectedIndex),
+            ),
+            floatingActionButton: _buildFloatingActionButton(),
+            bottomNavigationBar: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed, 
+              backgroundColor: themeProvider.backgroundImage != null
+                  ? Colors.transparent
+                  : Theme.of(context).bottomAppBarTheme.color,
+              elevation: themeProvider.backgroundImage != null ? 0 : 8.0,
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.chat),
+                  label: 'Chat',
                 ),
-              )
-            : null,
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      floatingActionButton: _buildFloatingActionButton(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Chat',
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.model_training),
+                  label: 'Models',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.note),
+                  label: 'Notes',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.settings),
+                  label: 'Settings',
+                ),
+              ],
+              currentIndex: _selectedIndex,
+              selectedItemColor: Theme.of(context).colorScheme.primary,
+              unselectedItemColor: Colors.grey,
+              onTap: _onItemTapped,
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.model_training),
-            label: 'Models',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.note),
-            label: 'Notes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
-      ),
+        );
+      },
     );
   }
 
@@ -111,7 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
           title: const Text('Add Model'),
           content: TextField(
             controller: modelNameController,
-            decoration: const InputDecoration(hintText: "Enter model name (e.g., 'llama3')"),
+            decoration: const InputDecoration(
+                hintText: "Enter model name (e.g., 'llama3')"),
             autofocus: true,
           ),
           actions: <Widget>[

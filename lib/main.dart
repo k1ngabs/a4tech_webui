@@ -14,41 +14,97 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+
   const MyApp({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => ModelProvider()),
-        ChangeNotifierProvider(create: (_) => ChatProvider()),
-        ChangeNotifierProvider(create: (_) => NotesProvider()),
-        ChangeNotifierProvider(create: (_) => SystemProvider()),
-      ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
-          return MaterialApp(
-            title: '4Tech WebUI',
-            theme: ThemeData(
-              brightness: Brightness.light,
-              primarySwatch: Colors.blue,
-              textTheme: GoogleFonts.latoTextTheme(
-                ThemeData(brightness: Brightness.light).textTheme,
-              ),
-            ),
-            darkTheme: ThemeData(
-              brightness: Brightness.dark,
-              primarySwatch: Colors.blue,
-              textTheme: GoogleFonts.latoTextTheme(
-                ThemeData(brightness: Brightness.dark).textTheme,
-              ),
-            ),
-            themeMode: themeProvider.themeMode,
-            home: const HomeScreen(),
-          );
-        },
-      ),
-    );
+
+
+  TextTheme _getFontTextTheme(AppFont font, Brightness brightness) {
+
+    switch (font) {
+
+      case AppFont.poppins:
+
+        return GoogleFonts.poppinsTextTheme(ThemeData(brightness: brightness).textTheme);
+
+      case AppFont.sora:
+
+        return GoogleFonts.soraTextTheme(ThemeData(brightness: brightness).textTheme);
+
+      case AppFont.roboto:
+
+        return GoogleFonts.robotoTextTheme(ThemeData(brightness: brightness).textTheme);
+
+      case AppFont.lato:
+
+        return GoogleFonts.latoTextTheme(ThemeData(brightness: brightness).textTheme);
+
+    }
+
   }
+
+
+
+  @override
+
+  Widget build(BuildContext context) {
+
+    return MultiProvider(
+
+      providers: [
+
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+
+        ChangeNotifierProvider(create: (_) => ModelProvider()),
+
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
+
+        ChangeNotifierProvider(create: (_) => NotesProvider()),
+
+        ChangeNotifierProvider(create: (_) => SystemProvider()),
+
+      ],
+
+      child: Consumer<ThemeProvider>(
+
+        builder: (context, themeProvider, child) {
+
+          return MaterialApp(
+
+            title: '4Tech WebUI',
+
+            theme: ThemeData(
+
+              brightness: Brightness.light,
+
+              primarySwatch: Colors.blue,
+
+              textTheme: _getFontTextTheme(themeProvider.font, Brightness.light),
+
+            ),
+
+            darkTheme: ThemeData(
+
+              brightness: Brightness.dark,
+
+              primarySwatch: Colors.blue,
+
+              textTheme: _getFontTextTheme(themeProvider.font, Brightness.dark),
+
+            ),
+
+            themeMode: themeProvider.themeMode,
+
+            home: const HomeScreen(),
+
+          );
+
+        },
+
+      ),
+
+    );
+
+  }
+
 }

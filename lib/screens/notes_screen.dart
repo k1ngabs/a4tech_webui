@@ -9,6 +9,7 @@ class NotesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Consumer<NotesProvider>(
         builder: (context, notesProvider, child) {
           if (notesProvider.isLoading) {

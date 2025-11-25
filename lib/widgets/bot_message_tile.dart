@@ -11,8 +11,6 @@ class BotMessageTile extends StatefulWidget {
 }
 
 class _BotMessageTileState extends State<BotMessageTile> {
-  bool _isExpanded = false;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,38 +34,47 @@ class _BotMessageTileState extends State<BotMessageTile> {
   }
 
   Widget _buildStaticView() {
-    return Text(widget.message.content);
+    final content = widget.message.content;
+    final thinkRegex = RegExp(r'<think>([\s\S]*?)<\/think>');
+    final matches = thinkRegex.allMatches(content);
+
+    if (matches.isEmpty) {
+      return Text(content);
+    }
+
+    final thinkContents = matches.map((m) => m.group(1)!).toList();
+    final visibleContent = content.replaceAll(thinkRegex, '').trim();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (visibleContent.isNotEmpty) Text(visibleContent),
+        ExpansionTile(
+          title: const Text('Show thoughts'),
+          children: [
+            for (final thinkContent in thinkContents)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(thinkContent.trim()),
+              ),
+          ],
+        ),
+      ],
+    );
   }
 
   Widget _buildStreamingView() {
-    if (_isExpanded) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(widget.message.content),
-          IconButton(
-            icon: const Icon(Icons.expand_less),
-            onPressed: () => setState(() => _isExpanded = false),
-          ),
-        ],
-      );
-    } else {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('Bot is typing...'),
-          const SizedBox(width: 8),
-          SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2.0),
-          ),
-          IconButton(
-            icon: const Icon(Icons.expand_more),
-            onPressed: () => setState(() => _isExpanded = true),
-          ),
-        ],
-      );
-    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: const [
+        Text('Bot is typing...'),
+        SizedBox(width: 8),
+        SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(strokeWidth: 2.0),
+        ),
+      ],
+    );
   }
 }

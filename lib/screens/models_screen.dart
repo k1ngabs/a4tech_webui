@@ -9,6 +9,7 @@ class ModelsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Consumer<ModelProvider>(
         builder: (context, modelProvider, child) {
           if (modelProvider.isLoading && modelProvider.models.isEmpty) {

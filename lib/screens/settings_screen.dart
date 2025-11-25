@@ -9,7 +9,10 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('Settings'),
       ),
       body: Padding(
@@ -18,6 +21,8 @@ class SettingsScreen extends StatelessWidget {
           children: [
             _buildSectionTitle(context, 'Appearance'),
             _buildThemeSelector(context),
+            _buildFontSelector(context),
+            _buildBackgroundSelector(context),
             const Divider(),
             _buildSectionTitle(context, 'Service Management'),
             _buildServiceController(context),
@@ -34,6 +39,42 @@ class SettingsScreen extends StatelessWidget {
         title,
         style: Theme.of(context).textTheme.titleLarge,
       ),
+    );
+  }
+
+  Widget _buildFontSelector(BuildContext context) {
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return ListTile(
+          title: const Text('Font'),
+          trailing: DropdownButton<AppFont>(
+            value: themeProvider.font,
+            onChanged: (AppFont? newValue) {
+              if (newValue != null) {
+                themeProvider.setFont(newValue);
+              }
+            },
+            items: const [
+              DropdownMenuItem(
+                value: AppFont.lato,
+                child: Text('Lato'),
+              ),
+              DropdownMenuItem(
+                value: AppFont.poppins,
+                child: Text('Poppins'),
+              ),
+              DropdownMenuItem(
+                value: AppFont.sora,
+                child: Text('Sora'),
+              ),
+              DropdownMenuItem(
+                value: AppFont.roboto,
+                child: Text('Roboto'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -63,6 +104,31 @@ class SettingsScreen extends StatelessWidget {
                 child: Text('Dark'),
               ),
             ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildBackgroundSelector(BuildContext context) {
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        // Create a list with a "None" option
+        final List<String?> displayOptions = [null, ...themeProvider.availableBackgrounds];
+
+        return ListTile(
+          title: const Text('Background'),
+          trailing: DropdownButton<String?>(
+            value: themeProvider.backgroundImage,
+            onChanged: (String? newValue) {
+              themeProvider.setBackgroundImage(newValue);
+            },
+            items: displayOptions.map((String? value) {
+              return DropdownMenuItem<String?>(
+                value: value,
+                child: Text(value?.split('/').last ?? 'None'),
+              );
+            }).toList(),
           ),
         );
       },

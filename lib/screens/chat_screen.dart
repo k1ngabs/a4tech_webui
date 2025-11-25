@@ -17,14 +17,15 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Set initial model if not set
-    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    final modelProvider = Provider.of<ModelProvider>(context, listen: false);
-    if (chatProvider.selectedModel == null && modelProvider.models.isNotEmpty) {
-      chatProvider.setSelectedModel(modelProvider.models.first.name);
-    }
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+      final modelProvider = Provider.of<ModelProvider>(context, listen: false);
+      if (chatProvider.selectedModel == null && modelProvider.models.isNotEmpty) {
+        chatProvider.setSelectedModel(modelProvider.models.first.name);
+      }
+    });
   }
 
   void _sendMessage() {
@@ -58,7 +59,10 @@ class _ChatScreenState extends State<ChatScreen> {
     }
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: _buildModelSelector(modelProvider, chatProvider),
         actions: [
           IconButton(

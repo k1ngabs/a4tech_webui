@@ -1,6 +1,6 @@
 # a4tech_webui
 
-A new Flutter project.
+Projeto de WebUI para gerenciar Ollama
 
 ## Getting Started
 
